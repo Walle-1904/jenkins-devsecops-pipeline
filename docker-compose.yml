@@ -1,23 +1,52 @@
+ 
 version: '3.8'
 
 services:
+
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "${JENKINS_PORT:-8080}:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
   zap:
     image: ghcr.io/zaproxy/zaproxy:stable
     container_name: zap
+    restart: unless-stopped
     ports:
-      - "8090:8080"
+      - "${ZAP_PORT:-8090}:8080"
     command: zap-webswing.sh
+
+  app:
+    image: nginx:latest
+    container_name: test-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8085}:80"
+    volumes:
+      - ./app:/usr/share/nginx/html
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 volumes:
   jenkins_home:
+  mysql_data:

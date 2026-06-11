@@ -1,19 +1,41 @@
- # jenkins-devsecops-pipeline
+ # docker-infra
 
-DevSecOps pipeline with security scanning integrated — Trivy (SCA) + OWASP ZAP (DAST) + Security Gate.
+Infrastructure as code — multi-service Docker Compose setup for DevSecOps environment.
 
-## Pipeline stages
+## Services
 
-| Stage | Description |
-|-------|-------------|
-| Checkout | Clone repository |
-| Build | Build application |
-| Test | Run Cypress E2E tests from [cypress-e2e-suite](https://github.com/Walle-1904/cypress-e2e-suite) |
-| Security Scan - SCA | Trivy vulnerability scan on dependencies and images |
-| Security Scan - DAST | OWASP ZAP baseline scan against target app |
-| Security Gate | Fail pipeline if CVSS >= 7 vulnerabilities found |
-| Deploy | Deploy application |
+| Service | Image | Port | Description |
+|---------|-------|------|-------------|
+| Jenkins | jenkins/jenkins:lts | 8080 | CI/CD server |
+| OWASP ZAP | zaproxy/zaproxy:stable | 8090 | DAST security scanner |
+| App | nginx:latest | 8085 | Test application |
+| MySQL | mysql:8.0 | 3306 | Database |
 
 ## Tech stack
 
-![Jenkins](https://img.shields.io/badge
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=flat&logo=jenkins&logoColor=white)
+![OWASP ZAP](https://img.shields.io/badge/OWASP_ZAP-000000?style=flat&logo=owasp&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+
+## How to run
+
+```bash
+# Copy env file
+cp .env.example .env
+
+# Edit .env with your values
+# Start all services
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# Stop all services
+docker-compose down
+```
+
+## Related repos
+
+- [jenkins-devsecops-pipeline](https://github.com/Walle-1904/jenkins-devsecops-pipeline) — Pipeline that runs on this infrastructure
+- [cypress-e2e-suite](https://github.com/Walle-1904/cypress-e2e-suite) — Tests executed in the pipeline
